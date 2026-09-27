@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tukang-sayur"
+version = "0.1.0"
+description = "Tukang Sayur - pemotong video otomatis jadi klip vertikal 9:16 siap upload"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Tukang Sayur" }]
+keywords = ["video", "shorts", "reels", "tiktok", "whisper", "ffmpeg"]
+dependencies = [
+  "PyYAML>=6.0",
+  "requests>=2.31",
+  "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+ingest = ["yt-dlp>=2024.8.6"]
+asr = ["faster-whisper>=1.0.3"]
+vision = ["opencv-python-headless>=4.9"]
+ui = ["gradio>=4.44"]
+api = ["fastapi>=0.110", "uvicorn>=0.29"]
+dev = ["pytest>=8.0"]
+all = [
+  "yt-dlp>=2024.8.6",
+  "faster-whisper>=1.0.3",
+  "opencv-python-headless>=4.9",
+  "gradio>=4.44",
+  "fastapi>=0.110",
+  "uvicorn>=0.29",
+  "pytest>=8.0",
+]
+
+[project.scripts]
+tukang-sayur = "tukang_sayur.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["tukang_sayur*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+  "slow: test yang butuh ffmpeg / render sungguhan",
+  "network: test yang butuh koneksi internet",
+]

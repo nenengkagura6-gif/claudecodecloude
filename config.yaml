@@ -1,0 +1,180 @@
+# =====================================================================
+# Tukang Sayur - konfigurasi utama
+# Semua nilai di bawah boleh dihapus; yang tidak ditulis memakai default
+# bawaan kode (lihat tukang_sayur/config.py -> DEFAULT_CONFIG).
+# =====================================================================
+
+project:
+  work_dir: work            # file kerja sementara (unduhan, klip mentah)
+  output_dir: output        # hasil akhir per job
+  cache_dir: .cache         # cache transkripsi & analisis wajah
+  keep_intermediate: false  # true = jangan hapus file antara (buat debug)
+
+ingest:
+  # Format yt-dlp. Default aman untuk PC kentang: maksimal 1080p.
+  ytdlp_format: "bv*[height<=1080]+ba/b[height<=1080]/b"
+  cookies_from_browser: null   # contoh: chrome, firefox (untuk video login)
+  max_duration_minutes: 180
+  normalize:
+    fps: 30
+    max_height: 1080
+    audio_sample_rate: 48000
+    audio_channels: 2
+
+transcription:
+  engine: faster-whisper     # faster-whisper | dummy
+  model: small               # tiny | base | small | medium | large-v3
+  compute_type: int8         # int8 = paling ringan untuk CPU
+  device: cpu
+  cpu_threads: 4
+  beam_size: 5
+  language: id               # id (Indonesia) | su (Sunda) | auto
+  vad_filter: true
+  condition_on_previous_text: false
+  cache: true
+
+llm:
+  provider: anthropic        # anthropic | openai | gemini | ollama | mock
+  temperature: 0.4
+  max_tokens: 4000
+  timeout_seconds: 120
+  max_retries: 3
+  providers:
+    anthropic:
+      model: claude-sonnet-5
+      api_key_env: ANTHROPIC_API_KEY
+      base_url: https://api.anthropic.com
+    openai:
+      model: gpt-4o-mini
+      api_key_env: OPENAI_API_KEY
+      base_url: https://api.openai.com/v1
+    gemini:
+      model: gemini-2.0-flash
+      api_key_env: GEMINI_API_KEY
+      base_url: https://generativelanguage.googleapis.com/v1beta
+    ollama:
+      model: llama3.1:8b
+      base_url: http://localhost:11434
+      api_key_env: null
+
+candidates:
+  min_clips: 5
+  max_clips: 15
+  min_duration: 20           # detik
+  max_duration: 90           # detik
+  snap_to_sentence: true     # potong tepat di batas kalimat
+  max_hook_words: 8
+  padding_start: 0.25        # detik, mundur sedikit biar kata awal utuh
+  padding_end: 0.35
+  max_overlap_ratio: 0.35    # kandidat yang tumpang tindih > ini dibuang
+
+scoring:
+  weights:                   # total bobot sebaiknya 1.0
+    hook: 0.35
+    emotion: 0.25
+    clarity: 0.20
+    standalone: 0.20
+  min_score: 55              # klip di bawah skor ini tidak dirender
+
+reframe:
+  enabled: true
+  detector: auto             # auto | mediapipe | opencv | none
+  sample_fps: 5              # analisis 5 frame/detik (hemat CPU)
+  smoothing_window: 9        # median filter (jumlah sample, ganjil)
+  ema_alpha: 0.25            # makin kecil = makin halus/lambat
+  deadzone_px: 24            # gerak kecil diabaikan biar tidak goyang
+  keyframe_interval: 0.4     # jarak keyframe crop pada ekspresi ffmpeg
+  fallback: blur             # blur | center (kalau wajah tidak terdeteksi)
+  blur_strength: 40
+  min_face_confidence: 0.5
+
+subtitle:
+  enabled: true
+  font_name: Montserrat
+  font_size: 64
+  primary_color: "&H00FFFFFF"    # putih (format ASS: &HAABBGGRR)
+  highlight_color: "&H0000E5FF"  # kuning-oranye untuk kata aktif
+  outline_color: "&H00000000"
+  back_color: "&H80000000"
+  outline: 4
+  shadow: 1
+  bold: true
+  uppercase: true
+  max_chars_per_line: 22
+  max_words_per_line: 4
+  margin_bottom: 420             # jarak dari bawah (px)
+  margin_horizontal: 90
+  karaoke: true                  # highlight kata yang sedang diucapkan
+
+hook:
+  enabled: true
+  duration: 3.0                  # detik hook tampil (di atas video HIDUP)
+  font_name: Montserrat
+  font_size: 78
+  primary_color: "&H00FFFFFF"
+  outline_color: "&H00000000"
+  back_color: "&HB0000000"
+  outline: 5
+  shadow: 0
+  bold: true
+  uppercase: true
+  max_chars_per_line: 18
+  margin_top: 240
+  margin_horizontal: 80
+  fade_in: 0.25
+  fade_out: 0.35
+
+audio:
+  remove_silence: false
+  silence_threshold_db: -34
+  min_silence_duration: 0.45
+  keep_padding: 0.08
+  loudnorm: true
+  target_lufs: -14
+  true_peak: -1.5
+
+render:
+  width: 1080
+  height: 1920
+  fps: 30
+  video_codec: libx264
+  preset: veryfast
+  crf: 20
+  audio_codec: aac
+  audio_bitrate: 160k
+  threads: 0                     # 0 = biarkan ffmpeg pilih
+  thumbnail: true
+  thumbnail_offset_ratio: 0.25   # ambil thumbnail di 25% durasi klip
+
+watermark:
+  enabled: false
+  path: assets/logo.png
+  position: top-right            # top-left | top-right | bottom-left | bottom-right
+  opacity: 0.75
+  scale_width: 160
+  margin: 40
+
+metadata:
+  use_llm: true                  # judul/caption/hashtag dibuat LLM
+  hashtag_count: 8
+  language: id
+  json_filename: metadata.json
+  csv_filename: metadata.csv
+
+batch:
+  state_file: batch_state.json
+  continue_on_error: true
+
+server:
+  host: 0.0.0.0
+  port: 8000
+  api_token_env: TUKANG_SAYUR_TOKEN
+
+ui:
+  host: 127.0.0.1
+  port: 7860
+  share: false
+
+logging:
+  level: INFO                    # DEBUG | INFO | WARNING | ERROR
+  file: logs/tukang_sayur.log

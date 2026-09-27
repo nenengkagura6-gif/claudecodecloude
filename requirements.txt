@@ -1,0 +1,24 @@
+# --- Inti (wajib) ---
+PyYAML>=6.0
+requests>=2.31
+numpy>=1.24
+
+# --- Ingest ---
+yt-dlp>=2024.8.6
+
+# --- Transkripsi (CPU, int8) ---
+faster-whisper>=1.0.3
+
+# --- Reframe / face tracking ---
+opencv-python-headless>=4.9
+# mediapipe opsional: lebih akurat, tapi tidak tersedia di semua platform.
+# Install manual bila perlu:  pip install mediapipe
+# mediapipe>=0.10.14
+
+# --- UI & API opsional ---
+gradio>=4.44
+fastapi>=0.110
+uvicorn>=0.29
+
+# --- Test ---
+pytest>=8.0
