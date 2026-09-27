@@ -17,7 +17,6 @@ import json
 
 import pytest
 
-from tukang_sayur.config import Config
 from tukang_sayur.errors import ScoringError
 from tukang_sayur.llm.base import LLMProvider, LLMResult
 from tukang_sayur.llm.parsing import parse_scores

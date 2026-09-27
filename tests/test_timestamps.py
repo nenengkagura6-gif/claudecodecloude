@@ -24,7 +24,6 @@ from tukang_sayur.candidates import (
     snap_range,
 )
 from tukang_sayur.ffexpr import (
-    Keyframe,
     evaluate_keyframes,
     make_keyframes,
     piecewise_expression,

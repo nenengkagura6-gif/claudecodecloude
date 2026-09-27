@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
-from tukang_sayur.audio import Range
 from tukang_sayur.reframe import MODE_BLUR, MODE_CENTER, MODE_TRACK, ReframePlan, build_keyframes
 from tukang_sayur.render import (
     RenderRequest,

@@ -16,7 +16,7 @@ detik 0 **di atas video yang tetap berjalan** - tidak ada freeze-frame.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Iterable, List, Optional, Sequence
 
@@ -29,6 +29,12 @@ log = get_logger("subtitles")
 
 #: Jeda maksimum (detik) sebelum baris subtitle dipotong jadi baris baru.
 LINE_BREAK_GAP = 0.65
+
+#: Tinggi acuan gaya. Semua angka px di config (font_size, margin, outline)
+#: dianggap untuk kanvas 1080x1920. Kalau render.height diubah - misalnya ke
+#: 720x1280 supaya file lebih kecil - ukurannya diskalakan otomatis, jadi
+#: tampilannya tetap sama proporsinya.
+REFERENCE_HEIGHT = 1920
 
 _NAMED_COLORS = {
     "white": "&H00FFFFFF", "putih": "&H00FFFFFF",
@@ -159,6 +165,20 @@ class SubtitleStyle:
             border_style=int(cfg.get("subtitle.border_style", 1)),
         )
 
+    def scaled(self, factor: float) -> "SubtitleStyle":
+        """Salinan gaya dengan ukuran px diskalakan (lihat REFERENCE_HEIGHT)."""
+
+        if abs(factor - 1.0) < 1e-6:
+            return self
+        return replace(
+            self,
+            font_size=max(8, int(round(self.font_size * factor))),
+            outline=round(self.outline * factor, 2),
+            shadow=round(self.shadow * factor, 2),
+            margin_bottom=max(0, int(round(self.margin_bottom * factor))),
+            margin_horizontal=max(0, int(round(self.margin_horizontal * factor))),
+        )
+
     def style_line(self, name: str = "Sub") -> str:
         return (
             f"Style: {name},{self.font_name},{self.font_size},{self.primary_color},"
@@ -214,6 +234,20 @@ class HookStyle:
             fade_out=float(cfg.get("hook.fade_out", 0.35)),
             enabled=bool(cfg.get("hook.enabled", True)),
             border_style=int(cfg.get("hook.border_style", 3)),
+        )
+
+    def scaled(self, factor: float) -> "HookStyle":
+        """Salinan gaya dengan ukuran px diskalakan (lihat REFERENCE_HEIGHT)."""
+
+        if abs(factor - 1.0) < 1e-6:
+            return self
+        return replace(
+            self,
+            font_size=max(8, int(round(self.font_size * factor))),
+            outline=round(self.outline * factor, 2),
+            shadow=round(self.shadow * factor, 2),
+            margin_top=max(0, int(round(self.margin_top * factor))),
+            margin_horizontal=max(0, int(round(self.margin_horizontal * factor))),
         )
 
     def style_line(self, name: str = "Hook") -> str:
@@ -425,6 +459,11 @@ def build_ass(
     subtitles_enabled: bool = True,
 ) -> str:
     """Rangkai seluruh isi file ``.ass``."""
+
+    factor = (float(height) / REFERENCE_HEIGHT) if height else 1.0
+    style = style.scaled(factor)
+    if hook_style is not None:
+        hook_style = hook_style.scaled(factor)
 
     styles = [style.style_line("Sub")]
     if hook_style is not None:

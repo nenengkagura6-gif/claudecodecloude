@@ -12,7 +12,7 @@ subtitle, dan tombol proses. Hasilnya langsung bisa diputar dan diunduh.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from .config import Config
 from .errors import TukangSayurError

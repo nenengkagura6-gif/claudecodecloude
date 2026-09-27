@@ -16,7 +16,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
 
 from . import __version__
 from .config import Config
@@ -24,6 +24,9 @@ from .errors import TukangSayurError
 from .logging_utils import get_logger, setup_logging
 from .models import JobResult
 from .utils import human_duration
+
+if TYPE_CHECKING:  # hanya untuk anotasi; impor asli dilakukan saat dipakai
+    from .pipeline import ClipJobOptions
 
 log = get_logger("cli")
 

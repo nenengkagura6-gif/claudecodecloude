@@ -24,7 +24,7 @@ from .audio import Range, build_cut_filters, loudnorm_filter, measure_loudness
 from .config import Config
 from .errors import RenderError
 from .logging_utils import get_logger
-from .reframe import MODE_BLUR, MODE_CENTER, MODE_TRACK, ReframePlan
+from .reframe import MODE_BLUR, ReframePlan
 from .utils import even, ffmpeg_bin, probe_media, run_command
 
 log = get_logger("render")

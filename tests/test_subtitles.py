@@ -254,3 +254,39 @@ def test_relativize_words_menggeser_dan_membuang_yang_di_luar():
 def test_tanpa_kata_tetap_menghasilkan_file_valid():
     isi = build_ass([], style=SubtitleStyle(), hook_style=HookStyle(), hook_text="Cuma hook")
     assert "[Events]" in isi and ",Hook," in isi
+
+
+# ------------------------------------------------- penskalaan resolusi
+def test_ukuran_gaya_diskalakan_mengikuti_tinggi_render():
+    """Angka px di config dianggap untuk 1080x1920; resolusi lain diskalakan."""
+
+    dari_1920 = build_ass([kata(0, 1, "uji")], style=SubtitleStyle(font_size=64),
+                          width=1080, height=1920, clip_duration=2)
+    dari_1280 = build_ass([kata(0, 1, "uji")], style=SubtitleStyle(font_size=64),
+                          width=720, height=1280, clip_duration=2)
+
+    def ukuran(isi: str) -> int:
+        baris = [b for b in isi.splitlines() if b.startswith("Style: Sub")][0]
+        return int(baris.split(",")[2])
+
+    assert ukuran(dari_1920) == 64
+    assert ukuran(dari_1280) == pytest.approx(43, abs=1)  # 64 * 1280/1920
+
+
+def test_margin_ikut_diskalakan():
+    isi = build_ass([kata(0, 1, "uji")], style=SubtitleStyle(margin_bottom=420),
+                    width=540, height=960, clip_duration=2)
+    baris = [b for b in isi.splitlines() if b.startswith("Style: Sub")][0]
+    assert int(baris.split(",")[-2]) == pytest.approx(210, abs=1)
+
+
+def test_hook_juga_diskalakan():
+    isi = build_ass([], style=SubtitleStyle(), hook_style=HookStyle(font_size=78),
+                    hook_text="Hook", width=540, height=960, clip_duration=2)
+    baris = [b for b in isi.splitlines() if b.startswith("Style: Hook")][0]
+    assert int(baris.split(",")[2]) == pytest.approx(39, abs=1)
+
+
+def test_penskalaan_tidak_pernah_nol():
+    gaya = SubtitleStyle(font_size=10).scaled(0.01)
+    assert gaya.font_size >= 8
