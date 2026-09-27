@@ -104,6 +104,8 @@ subtitle:
   max_words_per_line: 4
   margin_bottom: 420             # jarak dari bawah (px)
   margin_horizontal: 90
+  border_style: 1                # 1 = teks ber-outline, 3 = kotak penuh
+  alignment: 2                   # 2 = bawah-tengah (angka numpad ASS)
   karaoke: true                  # highlight kata yang sedang diucapkan
 
 hook:
@@ -119,6 +121,8 @@ hook:
   bold: true
   uppercase: true
   max_chars_per_line: 18
+  border_style: 3                # kotak penuh biar hook terbaca di video apa pun
+  alignment: 8                   # 8 = atas-tengah
   margin_top: 240
   margin_horizontal: 80
   fade_in: 0.25

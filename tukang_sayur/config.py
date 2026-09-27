@@ -128,6 +128,8 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "margin_bottom": 420,
         "margin_horizontal": 90,
         "karaoke": True,
+        "border_style": 1,
+        "alignment": 2,
     },
     "hook": {
         "enabled": True,
@@ -142,6 +144,8 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "bold": True,
         "uppercase": True,
         "max_chars_per_line": 18,
+        "border_style": 3,
+        "alignment": 8,
         "margin_top": 240,
         "margin_horizontal": 80,
         "fade_in": 0.25,
