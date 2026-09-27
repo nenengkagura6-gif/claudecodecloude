@@ -1,0 +1,12 @@
+# Contoh file daftar untuk mode batch.
+# Satu URL atau path file per baris. Baris diawali '#' diabaikan.
+#
+# Pakai:  python -m tukang_sayur batch daftar-video.contoh.txt --max-clips 5
+# Proses yang terputus bisa dilanjutkan dengan menjalankan perintah yang sama.
+
+https://www.youtube.com/watch?v=CONTOH_ID_1
+https://youtu.be/CONTOH_ID_2
+
+# File lokal juga boleh:
+# /home/user/video/podcast-01.mp4
+# D:\rekaman\wawancara.mp4
