@@ -88,12 +88,22 @@ def median_filter(values: Sequence[float], window: int) -> List[float]:
     if window % 2 == 0:
         window += 1
     half = window // 2
-    # Tepi kiri/kanan diperpanjang (edge padding) supaya lonjakan di frame
-    # pertama/terakhir tidak ikut bocor ke hasil.
-    padded = [data[0]] * half + data + [data[-1]] * half
-    return [
-        statistics.median(padded[index : index + window]) for index in range(len(data))
-    ]
+    count = len(data)
+    if count < window:
+        return [statistics.median(data)] * count
+
+    out: List[float] = []
+    for index in range(count):
+        if index < half:
+            # Di tepi, jendela digeser ke dalam (bukan dipantulkan atau diulang):
+            # lonjakan pada sampel pertama/kedua tetap tersaring.
+            window_data = data[0:window]
+        elif index >= count - half:
+            window_data = data[count - window : count]
+        else:
+            window_data = data[index - half : index + half + 1]
+        out.append(statistics.median(window_data))
+    return out
 
 
 def exponential_smoothing(values: Sequence[float], alpha: float) -> List[float]:
